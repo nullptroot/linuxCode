@@ -22,24 +22,6 @@ class tw_timer
 {
 	public:
 		tw_timer(int rot,int ts):next(NULL),prev(NULL),rotation(rot),time_slot(ts){};
-        tw_timer(int timeout)
-        {   
-            if(timeout < 0)
-				assert("error timeout must bigger zero\n")
-			int ticks = 0;
-			/*下面根据待插入定时器的超时值计算它将在时间轮治安东多少个滴答后被
-			 * 触发，并将改滴答数存储于变量ticks中，如果待插入定时器的超时值小
-			 * 于时间轮槽间隔SI，则将ticks向上折合为1，否则就将ticks向下折合为timeout/SI*/
-			if(timeout < SI)
-				ticks = 1;
-			else
-				ticks = timeout/SI;
-			/*计算待插入的定时器在时间轮转动多少圈后被触发*/
-			rotation = ticks / N;
-			/*计算待插入的定时器应该被插入哪个槽中*/
-			time_slot = (cur_slot + (ticks % N)) % N;
-			/*创建新的定时器，它在时间轮转动rotation圈后被触发，且位于第ts个槽上*/
-        }
 	public:
 		int rotation;/*记录定时器在时间轮转多少圈后生效*/
 		int time_slot;/*记录定时器属于时间轮上哪个槽（对应的链表 下同*/
@@ -71,6 +53,7 @@ class time_wheel
 			}
 		}
 		/*根据定时值timeout创建一个定时器，并把它插入合适的槽中*/
+		/*下面这两个 add_timer大量的重复  可以修改的*/
 		tw_timer *add_timer(int timeout)
 		{
 			if(timeout < 0)

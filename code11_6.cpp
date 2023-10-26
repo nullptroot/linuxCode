@@ -27,9 +27,9 @@ struct client_data
 /*定时器类*/
 class heap_timer
 {
-piblic:
+public:
     heap_timer(int delay):expire(time(NULL) + delay){};
-private:
+public:
         time_t expire;/*定时器生效得绝对时间*/
         void (*cb_func)(client_data *);/*定时器回调函数*/
         client_data *user_data;/*用户数据*/
@@ -170,10 +170,12 @@ private:
     void resize() throw (std::exception)
     {
         heap_timer **temp = new heap_timer *[2 * capacity];
-        for(int i = 0; i < cur_size; ++i)
-            temp[i] = nullptr;
+        /*有点错误的  判断非空应该在 遍历之前*/
         if(!temp)
             throw std::exception();
+        for(int i = 0; i < cur_size; ++i)
+            temp[i] = nullptr;
+        
         capacity = capacity * 2;
         for(int i = 0; i < cur_size; ++i)
             temp[i] = array[i];
